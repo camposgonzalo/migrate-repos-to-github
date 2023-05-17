@@ -14,10 +14,9 @@
   - Example: git@github.com:Test/test.git,services
 
 - o: organization name or username (required)
-
-# Pending
-
-- team parameter to add at repo creation time as reader by default of gh cli
+- repo-type: public,private,internal (public default)
+- repo-team: team to be added to the repo
+- repo-team-permission: permission of the team to be added (ADMIN default)
 
 # Documentation
 

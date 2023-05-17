@@ -3,13 +3,28 @@ File="./repos.txt"
 IFS=',' # Internal Field Separator
 
 RepoType="public"
+RepoTeamPermission="ADMIN"
+RepoTeam=""
 
-while getopts o:rt:t:F flag
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    '--repo-type')   set -- "$@" '-y'   ;;
+    '--repo-team') set -- "$@" '-t'   ;;
+    '--repo-team-permission')   set -- "$@" '-p'   ;;
+    *)          set -- "$@" "$arg" ;;
+  esac
+done
+
+while getopts o:y:t:F:p: flag
 do
+    echo $flag
     case "${flag}" in
         o) OrgName=${OPTARG};;
-        type) RepoType=${OPTARG};;
+        y) RepoType=${OPTARG};;
+        t) RepoTeam=${OPTARG};;
         F) File=${OPTARG};;
+        p) RepoTeamPermission=${OPTARG};;
     esac
 done
 
@@ -26,8 +41,6 @@ do
 	git clone --bare "${OriginalRepoUrl}" && cd "${OriginalRepoName}"
 
 	gh repo create "${OrgName}/${NewRepoName}" --${RepoType} -d "MIGRATED FROM ${OriginalRepoUrl}" && git push --mirror "git@github.com:${OrgName}/${NewRepoName}.git" 
-
-    #--team ${RepoTeam}
 
 	cd ..
 	rm -rf $OriginalRepoName	
@@ -48,6 +61,18 @@ do
             }) { clientMutationId }
         }' -f repositoryId=$repositoryId -f branch="[main,master,develop]*" -F requiredReviews=2
 
+    if [ -n "$RepoTeam" ]
+    then
+        RepoTeamId=`gh api graphql -f query="{organization(login:\"${OrgName}\"){team(slug: \"${RepoTeam}\"){id}}}" -q .data.organization.team.id`
+        gh api graphql -f query='
+            mutation($repositoryId:ID!,$teamIds:[ID!]!,$permission:RepositoryPermission!) {
+                updateTeamsRepository(input: {
+                permission: $permission
+                repositoryId: $repositoryId
+                teamIds: $teamIds
+                }) { clientMutationId }
+            }' -f repositoryId=$repositoryId -f teamIds="${RepoTeamId}" -f permission=$RepoTeamPermission	
+    fi
 
     if [ $Action == "archive" ]
     then
