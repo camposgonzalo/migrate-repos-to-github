@@ -1,10 +1,10 @@
-## MIGRATION OF REPOS FORM GIT PROVIDER TO GITHUB
+## MIGRATION OF REPOS FROM GIT PROVIDER TO GITHUB
 
 # PRE REQUISITES
 
-git
-gh cli
-ssh key config for github connection or change the script to use https
+- git
+- gh cli
+- ssh key config for github connection or change the script to use https
 
 # Parameters
 
@@ -13,7 +13,7 @@ ssh key config for github connection or change the script to use https
   Example:
   git@github.com:Test/test.git,services
 
-- o: organization name or username (require)
+- o: organization name or username (required)
 
 # Pending
 
