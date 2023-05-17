@@ -9,9 +9,9 @@
 # Parameters
 
 - F: file name with list of repos to be migrated with the following structure (default file name repos.txt)
-  action(migrate,archive),original git url,name of the new repo
-  Example:
-  git@github.com:Test/test.git,services
+
+  - action(migrate,archive),original git url,name of the new repo
+  - Example: git@github.com:Test/test.git,services
 
 - o: organization name or username (required)
 
